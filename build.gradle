@@ -1,0 +1,66 @@
+group "io.sebmoreno"
+version "1.0"
+
+apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "eclipse"
+apply plugin: "net.serenity-bdd.aggregator"
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    ext {
+        serenityVersion = "3.2.0"
+        serenityCucumberVersion = "3.2.0"
+        serenityGradleVersion = "2.4.4"
+    }
+
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:$serenityGradleVersion")
+    }
+}
+
+
+dependencies {
+    testImplementation "net.serenity-bdd:serenity-core:$serenityVersion"
+    testImplementation "net.serenity-bdd:serenity-junit:$serenityVersion"
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.assertj:assertj-core:3.22.0'
+    testImplementation 'org.slf4j:slf4j-simple:1.7.36'
+
+    implementation "net.serenity-bdd:serenity-core:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-junit:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay-rest:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-cucumber:$serenityCucumberVersion"
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation "net.sf.jt400:jt400-full:6.0"
+}
+
+test {
+    systemProperties System.getProperties()
+    systemProperty "file.encoding", "UTF-8"
+    systemProperty "feature.file.encoding", "UTF-8"
+    systemProperty "cucumber.options", System.properties.getProperty("cucumber.options")
+    testLogging.showStandardStreams = true
+    finalizedBy(aggregate)
+}
+
+gradle.startParameter.continueOnFailure = true
